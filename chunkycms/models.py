@@ -5,7 +5,7 @@ from django.conf import settings
 
 class SelfParent(Exception):
     def __init__(self):
-	super(SelfParent, self).__init__('Object cannot be parent of itself')
+	super(SelfParent, self).__init__('Object cannot be ancestor of itself')
 
 class AlreadyExist(Exception):
     def __init__(self):
@@ -27,16 +27,16 @@ class Hierarchical(models.Model):
     """
     abtract model for hierachical structures
     """
-    slug = models.CharField(_('Slug'), max_length=150)
+    slug = models.CharField(_('Slug'), max_length=150, blank=True)
     parent = models.ForeignKey('self', verbose_name=_('Parent cathegory'), null=True, blank=True)
     
     class Meta:
 	abstract = True
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
 	setattr(self, 'AlreadyExist', AlreadyExist)
 	setattr(self, 'SelfParent', SelfParent)
-	super(Hierarchical, self).__init__(**kwargs)
+	super(Hierarchical, self).__init__(*args, **kwargs)
 
     def level_unique(self):
 	"""
@@ -110,7 +110,6 @@ class Chunk(Content):
 
 class Post(Content):
     title = models.CharField(_('Title'), max_length=150)
-    slug = models.CharField(_('Slug'), max_length=150)
     
     class Meta:
 	verbose_name = _('Post')
@@ -132,8 +131,31 @@ class Post(Content):
 		    if char.isalnum():
 			slug += char
 	    self.slug = slug
+	
+	self.slug = self.slug.replace(u'\xe4', 'ae').replace(u'\xfc', 'ue').replace(u'\xf6', 'oe').replace(u'\xdf', 'ss')
+	self.slug = self.slug.lower()
+	
+	# Add suffix number, if slug already exist
+	try:
+	    post = self.lvl_query_set.get(slug=self.slug)
+	    if post.pk != self.pk:
+		self.gen_alt_slug()
+	except self.__class__.DoesNotExist:
+	    pass
 	    
 	super(Post, self).save(**kwargs)
+
+    def gen_alt_slug(self):
+	""" Generates an alternative slug. It appends a number to the old slug. """
+	
+	posts = self.lvl_query_set.filter(slug=self.slug)
+	i = 0
+	while posts.count() > 0:
+	    i += 1
+	    slug = self.slug + str(i)
+	    posts = self.lvl_query_set.filter(slug=slug)
+	
+	self.slug = slug
 
 class Page(Post, Hierarchical):
 
@@ -151,8 +173,20 @@ class Page(Post, Hierarchical):
 
 	super(Page, self).save(**kwargs)
 
+    @property
+    def lvl_query_set(self):
+	if self.parent:
+	    return self.parent.page_set
+	else:
+	    return Page.objects.filter(parent=None)
+
 class NewsPost(Post):
-    
+    slug = models.CharField(_('Slug'), max_length=150, blank=True)
+
     class Meta:
 	verbose_name = _('News Post')
 	verbose_name_plural = _('News Posts')
+
+    @property
+    def lvl_query_set(self):
+	return NewsPost.objects.all()
