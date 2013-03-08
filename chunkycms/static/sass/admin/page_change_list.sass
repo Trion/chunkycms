@@ -1,0 +1,43 @@
+@import "compass/css3"
+
+.page-tree-container
+    background: #fff
+
+    ul 
+        padding: 0 !important
+        margin: 0 0 0 20px !important
+
+        li
+            list-style: none
+            padding: 0
+            @include background(linear-gradient(color-stops(#fff, #dadada 70px)))
+
+            .page-entry
+                border: 1px #dadada solid
+
+                &:after
+                    content: " "
+                    display: block
+                    clear: both
+
+            .left-col, .right-col
+                margin: 10px 0
+
+            .page-children
+                clear: both
+                background: #fff
+
+            .left-col
+                float: left
+                margin:
+                    left: 10px
+
+                a
+                    width: 10px
+                    display: inline-block
+                    margin: 0 5px 0 0
+
+            .right-col
+                float: right
+                margin:
+                    right: 10px

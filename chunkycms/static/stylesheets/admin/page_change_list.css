@@ -1,0 +1,54 @@
+/* line 3, ../../sass/admin/page_change_list.sass */
+.page-tree-container {
+  background: white;
+}
+/* line 6, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul {
+  padding: 0 !important;
+  margin: 0 0 0 20px !important;
+}
+/* line 10, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li {
+  list-style: none;
+  padding: 0;
+  background: -webkit-gradient(linear, 50% 0%, 50% 70, color-stop(0%, #ffffff), color-stop(100%, #dadada));
+  background: -webkit-linear-gradient(#ffffff, #dadada 70px);
+  background: -moz-linear-gradient(#ffffff, #dadada 70px);
+  background: -o-linear-gradient(#ffffff, #dadada 70px);
+  background: linear-gradient(#ffffff, #dadada 70px);
+}
+/* line 15, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .page-entry {
+  border: 1px #dadada solid;
+}
+/* line 18, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .page-entry:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+/* line 23, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .left-col, .page-tree-container ul li .right-col {
+  margin: 10px 0;
+}
+/* line 26, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .page-children {
+  clear: both;
+  background: white;
+}
+/* line 30, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .left-col {
+  float: left;
+  margin-left: 10px;
+}
+/* line 35, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .left-col a {
+  width: 10px;
+  display: inline-block;
+  margin: 0 5px 0 0;
+}
+/* line 40, ../../sass/admin/page_change_list.sass */
+.page-tree-container ul li .right-col {
+  float: right;
+  margin-right: 10px;
+}
