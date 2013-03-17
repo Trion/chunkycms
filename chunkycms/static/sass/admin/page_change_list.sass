@@ -1,6 +1,6 @@
 @import "compass/css3"
 
-.page-tree-container
+.tree-container
     background: #fff
 
     ul 
@@ -12,7 +12,7 @@
             padding: 0
             @include background(linear-gradient(color-stops(#fff, #dadada 70px)))
 
-            .page-entry
+            .entry
                 border: 1px #dadada solid
 
                 &:after
@@ -23,7 +23,7 @@
             .left-col, .right-col
                 margin: 10px 0
 
-            .page-children
+            .children
                 clear: both
                 background: #fff
 
@@ -32,10 +32,9 @@
                 margin:
                     left: 10px
 
-                a
+                a.folder-icon
                     width: 10px
                     display: inline-block
-                    margin: 0 5px 0 0
 
             .right-col
                 float: right

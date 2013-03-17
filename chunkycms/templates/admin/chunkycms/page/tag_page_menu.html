@@ -1,0 +1,3 @@
+		<a href="{% url admin:chunkycms_page_change node.pk %}">edit</a> |
+		<a href="{% url admin:chunkycms_page_add %}?parent={{ node.pk }}">create Subpage</a> |
+		<a href="{% url show_page node.path %}">watch</a>

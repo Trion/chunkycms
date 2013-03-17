@@ -1,0 +1,3 @@
+		<a href="{% url admin:chunkycms_chunkcategory_change node.pk %}">edit</a> |
+		<a href="{% url admin:chunkycms_chunkcategory_add %}?parent={{ node.pk }}">add Subcategory</a> |
+		<a href="{% url admin:chunkycms_chunk_add %}?category={{ node.pk }}">add Chunk</a>

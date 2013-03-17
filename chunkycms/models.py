@@ -33,7 +33,7 @@ class Hierarchical(models.Model):
     abtract model for hierachical structures
     """
     slug = models.CharField(_('Slug'), max_length=150, blank=True)
-    parent = models.ForeignKey('self', verbose_name=_('Parent cathegory'), null=True, blank=True)
+    parent = models.ForeignKey('self', verbose_name=_('Parent'), null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -76,6 +76,19 @@ class Hierarchical(models.Model):
         """
         return self.__class__.objects.filter(parent=self.parent)
 
+    @property
+    def name(self):
+        """ title or slug, depending on type """
+        if hasattr(self, "title"):
+            return self.title
+        else:
+            return self.slug
+
+    @property
+    def children(self):
+        """ a list of children """
+        pass
+
 
 class ChunkCategory(Hierarchical):
 
@@ -94,6 +107,10 @@ class ChunkCategory(Hierarchical):
             raise self.SelfParent
 
         super(ChunkCategory, self).save(**kwargs)
+
+    @property
+    def children(self):
+        return list(self.chunkcategory_set.all()) + list(self.chunk_set.all())
 
 
 class Chunk(Content):
@@ -114,6 +131,10 @@ class Chunk(Content):
             raise self.AlreadyExist
 
         super(Chunk, self).save(**kwargs)
+
+    @property
+    def name(self):
+        return self.slug
 
 
 class Post(Content):
@@ -183,10 +204,52 @@ class Page(Post, Hierarchical):
 
     @property
     def lvl_query_set(self):
+        """ proterty which contains a query set with all pages on the same level """
         if self.parent:
             return self.parent.page_set
         else:
             return Page.objects.filter(parent=None)
+
+    @property
+    def path(self):
+        """ returns hiearchical path of the page """
+
+        page = self
+        path = ""
+        while page.parent is not None:
+            path = "/" + page.slug + path
+            page = page.parent
+
+        path = page.slug + path
+        return path
+
+    @property
+    def successors(self):
+        """ returns a queryset with all succsessors of a page """
+
+        # Maybe theres a better way to flatten hierachies in models
+        queryset = self.page_set.all()
+        for page in queryset:
+            queryset = queryset | page.page_set.all()
+
+        return queryset
+
+    @property
+    def children(self):
+        return list(self.page_set.all())
+
+    @classmethod
+    def get_by_path(cls, path):
+        """ returns page by path (slug hierarchy) """
+
+        slugs = path.split("/")
+        parent = cls.objects.get(slug=slugs[0], parent=None)
+        del slugs[0]
+
+        for slug in slugs:
+            parent = parent.page_set.get(slug=slug)
+
+        return parent
 
 
 class NewsPost(Post):

@@ -1,0 +1,17 @@
+{% load chunkycms_admin %}
+<ul class="tree">
+    {% for node in nodes %}
+    <li>
+	<div class="entry">
+	    <div class="left-col">
+		<a class="folder-icon" href="#children-{{ node.pk }}">+</a>
+		<a href="#children-{{ node.pk }}">{{ node.name }}</a>
+	    </div>
+	    <div class="right-col">
+		{% node_menu node %}
+	    </div>
+	</div>
+	<div id="children-{{ node.pk }}" class="children">{% hierarchy_tree node %}</div>
+    </li>
+    {% endfor %}
+</ul>
