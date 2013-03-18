@@ -1,3 +1,0 @@
-[submodule "chunkycms/static/create"]
-	path = chunkycms/static/create
-	url = git://github.com/bergie/create.git
