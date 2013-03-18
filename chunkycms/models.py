@@ -112,6 +112,17 @@ class ChunkCategory(Hierarchical):
     def children(self):
         return list(self.chunkcategory_set.all()) + list(self.chunk_set.all())
 
+    @property
+    def successors(self):
+        """ returns a queryset with all succsessors of the type ChunkCategory """
+
+        # Maybe theres a better way to flatten hierachies in models
+        queryset = self.chunkcategory_set.all()
+        for category in queryset:
+            queryset = queryset | category.chunkcategory_set.all()
+
+        return queryset
+
 
 class Chunk(Content):
     slug = models.CharField(_('Slug'), max_length=150)

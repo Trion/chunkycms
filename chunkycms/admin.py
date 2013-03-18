@@ -60,4 +60,19 @@ class CatAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['slug', 'parent']}),
     ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(CatAdmin, self).get_form(request, obj, **kwargs)
+
+        # Filter successors from parent list, to prevent cycled hierarchies
+        if obj is not None:
+            successors = obj.successors
+            successors_pks = [obj.pk]
+            for category in successors:
+                successors_pks.append(category.pk)
+
+            form.base_fields['parent'].queryset = form.base_fields['parent'].queryset.exclude(pk__in=successors_pks)
+
+        return form
+
 admin.site.register(ChunkCategory, CatAdmin)

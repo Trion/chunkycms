@@ -1,2 +1,25 @@
-{{ page.title }}
-{{ page.content }}
+{% load static %}
+<html>
+    <head>
+	<title>{{ page.title }}</title>
+
+	<link rel="stylesheet" href="{% static "create/themes/create-ui/css/create-ui.css" %}" />
+	<link rel="stylesheet" href="{% static "create/themes/midgard-notifications/midgardnotif.css" %}" />
+	<link rel="stylesheet" href="http://cdn.aloha-editor.org/latest/css/aloha.css" />
+
+	<script type="text/javascript" src="{% static "create/deps/jquery-1.7.1.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/jquery-ui-1.8.18.custom.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/underscore-min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/backbone-min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/vie-min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/jquery.rdfquery.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/annotate-min.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/create.js" %}"></script>
+	<script type="text/javascript" src="{% static "create/deps/create-aloha.js" %}"></script>
+    </head>
+
+    <body>
+	<h1>{{ page.title }}</h1>
+	<p>{{ page.content }}</p>
+    </body>
+</html>
