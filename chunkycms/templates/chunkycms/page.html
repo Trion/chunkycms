@@ -3,23 +3,130 @@
     <head>
 	<title>{{ page.title }}</title>
 
-	<link rel="stylesheet" href="{% static "create/themes/create-ui/css/create-ui.css" %}" />
-	<link rel="stylesheet" href="{% static "create/themes/midgard-notifications/midgardnotif.css" %}" />
-	<link rel="stylesheet" href="http://cdn.aloha-editor.org/latest/css/aloha.css" />
+	<script src="{% static "vendor/create/deps/jquery-1.7.1.min.js" %}"></script>
+	<script src="{% static "vendor/create/deps/jquery-ui-1.8.18.custom.min.js" %}"></script>
+	<script src="{% static "vendor/create/deps/underscore-min.js" %}"></script>
+	<script src="{% static "vendor/create/deps/backbone-min.js" %}"></script>
+	<script src="{% static "vendor/create/deps/vie-min.js" %}"></script>
+	<!--<script src="{% static "vendor/create/deps/jquery.rdfquery.min.js" %}"></script>-->
+	<!--<script src="{% static "vendor/create/deps/jquery.tagsinput.min.js" %}"></script>-->
+	<!--<script src="{% static "vendor/create/deps/annotate-min.js" %}"></script>-->
+	<!--<script src="{% static "vendor/create/deps/rangy-core-1.2.3.js" %}"></script>-->
+	<script src="{% static "vendor/create/examples/create.js" %}"></script>
 
-	<script type="text/javascript" src="{% static "create/deps/jquery-1.7.1.min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/jquery-ui-1.8.18.custom.min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/underscore-min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/backbone-min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/vie-min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/jquery.rdfquery.min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/annotate-min.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/create.js" %}"></script>
-	<script type="text/javascript" src="{% static "create/deps/create-aloha.js" %}"></script>
+
+	<!--<script src="{% static "vendor/create/deps/hallo-min.js" %}"></script>-->
+	<!--<script>-->
+	    <!--jQuery(document).ready(function () {-->
+		<!--jQuery('body').midgardCreate({-->
+		<!--url: function () {-->
+		    <!--return 'javascript:false;';-->
+		<!--},-->
+		<!--metadata: {-->
+		    <!--midgardTags: {}-->
+		<!--},-->
+		<!--collectionWidgets: {-->
+		    <!--'default': 'midgardCollectionAdd',-->
+		    <!--'skos:related': null-->
+		<!--},-->
+		<!--stanbolUrl: 'http://dev.iks-project.eu:8081'/*,-->
+		<!--language: 'pt_BR'*/-->
+		<!--});-->
+
+		<!--// Set a simpler editor for title fields-->
+		<!--jQuery('body').midgardCreate('configureEditor', 'title', 'halloWidget', {-->
+		<!--plugins: {-->
+		    <!--halloformat: {},-->
+		    <!--halloblacklist: {-->
+		    <!--tags: ['br']-->
+		    <!--}-->
+		<!--}-->
+		<!--});-->
+		<!--jQuery('body').midgardCreate('setEditorForProperty', 'dcterms:title', 'title');-->
+
+		<!--// Disable editing of author fields-->
+		<!--jQuery('body').midgardCreate('setEditorForProperty', 'dcterms:author', null);-->
+
+	    <!--});-->
+	    <!--// Fake Backbone.sync since there is no server to communicate with-->
+	    <!--Backbone.sync = function(method, model, options) {-->
+		<!--if (console && console.log) {-->
+		<!--console.log('Model contents', model.toJSONLD());-->
+		<!--}-->
+		<!--options.success(model);-->
+	    <!--};-->
+	<!--</script>-->
+
+        <script src="http://requirejs.org/docs/release/2.0.4/minified/require.js"></script>
+        <!-- Here you can define your prefered configuration of Aloha Editor -->
+        <script>
+            var Aloha = window.Aloha || ( window.Aloha = {} );
+            Aloha.settings = {
+                locale: 'en',
+                sidebar: {
+                  disabled: true
+                },
+                repositories: {
+                    linklist: {
+                        data: [
+                            { name: 'CreateJS Website', url:'http://createjs.org', type:'website' },
+                            { name: 'CreateJS on Github', url:'https://github.com/bergie/create', type:'website' },
+                            { name: 'Aloha Developers Wiki', url:'https://github.com/alohaeditor/Aloha-Editor/wiki', type:'website' },
+                            { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.org', type:'website' },
+                            { name: 'Aloha Editor Demos', url:'http://aloha-editor.org/demos.php', type:'website' },
+                            { name: 'Aloha Editor Logo', url:'http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20contenteditable%20transparent%20512.png', type:'image' }
+                        ]
+                    }
+                },
+                plugins: {
+                    format: {
+                        config: [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ]
+                }
+            }
+        }
+        </script>
+        <!-- Include Aloha Editor and load desired plugins -->
+       <script src="http://cdn.aloha-editor.org/latest/lib/aloha.js"
+            data-aloha-plugins="common/ui,
+                                common/commands,
+                                common/format,
+                                common/table,
+                                common/list,
+                                common/link,
+                                common/block,
+                                common/undo,
+                                common/contenthandler,
+                                common/paste,
+                                common/abbr"></script>
+        <link rel="stylesheet" href="http://cdn.aloha-editor.org/latest/css/aloha.css" />
+
+        <script>
+            jQuery(document).ready(function() {
+              jQuery('body').midgardCreate({
+                url: function () {
+                  return 'javascript:false;';
+                },
+                // Use Aloha Editor everywhere
+                editorWidgets: {
+                  default: 'aloha',
+                },
+                editorOptions: {
+                  aloha: {
+                    widget: 'alohaWidget'
+                  }
+                }
+              });
+            });
+        </script>
+
+	<link rel="stylesheet" href="{% static "vendor/create/themes/create-ui/css/create-ui.css" %}" />
+	<link rel="stylesheet" href="{% static "vendor/create/themes/midgard-notifications/midgardnotif.css" %}" />
     </head>
 
     <body>
-	<h1>{{ page.title }}</h1>
-	<p>{{ page.content }}</p>
+	<div about="/page/">
+	    <div property="title">{{ page.title }}</div>
+	    <div property="content">{{ page.content }}</div>
+	</div>
     </body>
 </html>
