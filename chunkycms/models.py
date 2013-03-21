@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.conf import settings
 
 
 class SelfParent(Exception):
@@ -199,6 +200,7 @@ class Post(Content):
 
 
 class Page(Post, Hierarchical):
+    template = models.CharField(_("Template"), max_length=250, choices=settings.CHUNKYCMS_TEMPLATES, default="chunkycms/page.html")
 
     class Meta:
         verbose_name = _('Page')
