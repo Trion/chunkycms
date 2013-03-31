@@ -1,0 +1,11 @@
+{% autoescape off %}
+{% if live_edit_mode %}
+    <div about="/chunk/">
+	<div property="content">{{ chunk.content }}</div>
+    </div>
+{% else %}
+    <div>
+	<div>{{ chunk.content }}</div>
+    </div>
+{% endif %}
+{% endautoescape %}

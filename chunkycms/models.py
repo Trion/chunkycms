@@ -148,6 +148,21 @@ class Chunk(Content):
     def name(self):
         return self.slug
 
+    @classmethod
+    def get_by_path(cls, path):
+        """ returns page by path (slug hierarchy) """
+
+        slugs = path.split("/")
+        parent = ChunkCategory.objects.get(slug=slugs[0], parent=None)
+        del slugs[0]
+
+        for slug in slugs[:-1]:
+            parent = parent.chunkcategory_set.get(slug=slug)
+
+        chunk = parent.chunk_set.get(slug=slugs[-1])
+
+        return chunk
+
 
 class Post(Content):
     title = models.CharField(_('Title'), max_length=150)

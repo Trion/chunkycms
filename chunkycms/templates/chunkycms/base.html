@@ -1,0 +1,20 @@
+{% load static %}
+<html>
+    <head>
+	<title>{% block title %}{{ page.title }}{% endblock %}</title>
+
+	{% if live_edit_mode %}
+	    {% include "admin/chunkycms/live_edit_resources.html" %}
+	{% endif %}
+	<style type="text/css">
+	    body {
+		margin-top: 65px;
+	    }
+	</style>
+    </head>
+
+    <body>
+	{% block content %}
+	{% endblock %}
+    </body>
+</html>
