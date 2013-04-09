@@ -7,7 +7,62 @@ import json
 from chunkycms.models import Page, NewsPost, Chunk, ChunkCategory
 
 
-class ChunkAdmin(admin.ModelAdmin):
+class LiveAdmin(admin.ModelAdmin):
+    """ base class for live editiable models """
+
+    def get_urls(self):
+        """ overwrite urls to enable ajax support """
+        urls = super(LiveAdmin, self).get_urls()
+        url_name = "chunkycms_%s_change_ajax" % self.model.__name__.lower()
+        my_urls = patterns('',
+                           url(r"^change/(?P<pk>[0-9]+)/$",
+                               self.admin_site.admin_view(self.ajax_change), name=url_name)
+                           )
+        return my_urls + urls
+
+    def ajax_change(self, request, pk):
+        """ view for ajax change requests """
+
+        if request.is_ajax():
+            if request.method == "PUT":
+                try:
+                    obj = self.model.objects.get(pk=pk)
+                except Page.DoesNotExist:
+                    raise Http404()
+
+                attr = self.json_to_dict(request.body)
+                for attr_name in attr:
+                    setattr(obj, attr_name, attr[attr_name])
+                obj.save()
+
+                return HttpResponse()
+            elif request.method == "GET":
+                #TODO create ajax get view
+                pass
+            elif request.method == "POST":
+                #TODO ajax creation view
+                pass
+        else:
+            redirect_target = "admin:chunkycms_%s_change" % self.model.__name__.lower()
+            return redirect(redirect_target, pk)
+
+    def json_to_dict(self, body):
+        """ converts a given body (json formatted) to a dictionary with possible model attributes """
+
+        dict_body = json.loads(body)
+        result_dict = {}
+        for item in dict_body:
+            # Skip meta data
+            if item.startswith("@"):
+                continue
+            # Strip unnecessary parts
+            attr_name = item.rsplit("/", 1)[-1][:-1]
+            result_dict[attr_name] = dict_body[item]
+
+        return result_dict
+
+
+class ChunkAdmin(LiveAdmin):
     fieldsets = [
         (None, {'fields': ['slug', 'content', 'category', 'author']}),
     ]
@@ -23,7 +78,7 @@ class ChunkAdmin(admin.ModelAdmin):
         return form
 
 
-class PageAdmin(admin.ModelAdmin):
+class PageAdmin(LiveAdmin):
     fieldsets = [
         (None, {'fields': ['title', 'content',
          'author', 'parent']}),
@@ -49,33 +104,6 @@ class PageAdmin(admin.ModelAdmin):
                 'parent'].queryset.exclude(pk__in=successors_pks)
 
         return form
-
-    def get_urls(self):
-        """ overwrite urls to enable ajax support """
-        urls = super(PageAdmin, self).get_urls()
-        my_urls = patterns('',
-                           url(r"^change/(?P<pk>[0-9a-z/\-\.\_]+)/$",
-                               self.admin_site.admin_view(self.ajax_change), name="chunkycms_page_change_ajax")
-                           )
-        return my_urls + urls
-
-    def ajax_change(self, request, pk):
-        """ view for ajax change requests """
-        if request.method == "PUT":
-            try:
-                obj = self.model.objects.get(pk=pk)
-            except Page.DoesNotExist:
-                raise Http404()
-
-            body = json.loads(request.body)
-            for item in body:
-                name = item.rsplit("/", 1)[-1][:-1]
-                if hasattr(obj, name):
-                    setattr(obj, name, body[item])
-            obj.save()
-            return HttpResponse()
-        else:
-            return redirect("admin:chunkycms_page_add", kwargs={"object_id": pk})
 
 
 class NewsPostAdmin(admin.ModelAdmin):

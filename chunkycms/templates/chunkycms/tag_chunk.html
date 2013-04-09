@@ -1,6 +1,6 @@
 {% autoescape off %}
 {% if live_edit_mode %}
-    <div about="/chunk/">
+    <div about="{% url admin:chunkycms_chunk_change_ajax chunk.pk %}">
 	<div property="content">{{ chunk.content }}</div>
     </div>
 {% else %}
