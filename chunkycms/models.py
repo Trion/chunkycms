@@ -133,8 +133,16 @@ class Chunk(Content):
         verbose_name = _('Chunk')
         verbose_name_plural = _('Chunks')
 
+    def __init__(self, *args, **kwargs):
+        super(Chunk, self).__init__(*args, **kwargs)
+
+        # Set chunk path
+        self.path = None
+        if self.pk:
+            self.path = self.__get_path()
+
     def __unicode__(self):
-        return self.slug
+        return self.path
 
     def save(self, **kwargs):
 
@@ -142,24 +150,58 @@ class Chunk(Content):
         if twins.count() > 0 and twins[0].pk != self.pk:
             raise self.AlreadyExist
 
+        # Set slug and parent by path and create chunk categories if necessary
+        slugs = self.path.split("/")
+        if len(slugs) > 1:
+            try:
+                parent = ChunkCategory.objects.get(slug=slugs[0], parent=None)
+            except ChunkCategory.DoesNotExist:
+                parent = ChunkCategory.objects.create(slug=slugs[0])
+            del slugs[0]
+
+            for slug in slugs[:-1]:
+                parent = ChunkCategory.objects.create(slug=slug, parent=parent)
+
+            self.slug = slugs[-1]
+            self.parent = parent
+        else:
+            self.slug = slugs[0]
+
         super(Chunk, self).save(**kwargs)
 
     @property
     def name(self):
-        return self.slug
+        return self.parent
+
+    def __get_path(self):
+        """ generates the path of a chunk """
+
+        path = self.slug
+        parent = self.category
+        while parent:
+            path = "{0}/{1}".format(parent.slug, path)
+            parent = parent.parent
+
+        return path
 
     @classmethod
     def get_by_path(cls, path):
         """ returns page by path (slug hierarchy) """
 
         slugs = path.split("/")
-        parent = ChunkCategory.objects.get(slug=slugs[0], parent=None)
-        del slugs[0]
+        if len(slugs) > 1:
+            try:
+                parent = ChunkCategory.objects.get(slug=slugs[0], parent=None)
+            except ChunkCategory.DoesNotExist:
+                raise cls.DoesNotExist()
+            del slugs[0]
 
-        for slug in slugs[:-1]:
-            parent = parent.chunkcategory_set.get(slug=slug)
+            for slug in slugs[:-1]:
+                parent = parent.chunkcategory_set.get(slug=slug)
 
-        chunk = parent.chunk_set.get(slug=slugs[-1])
+            chunk = parent.chunk_set.get(slug=slugs[-1])
+        else:
+            chunk = cls.objects.get(slug=slugs[0])
 
         return chunk
 
