@@ -7,12 +7,11 @@ from chunkycms.models import Chunk
 
 class Command(BaseCommand):
     help = "Gathers all chunks mentioned in templates and creates new models"
-    args = "<excluded_suffix exluded_suffix ...>"
 
     pattern = re.compile('\{% +chunk +request +"(?P<chunk_path>[0-9A-Za-z\/_\-]+)" +%\}')
 
     def handle(self, *args, **options):
-        # TODO ignore some file extensions
+        #TODO maybe some usefull options like excluded file extensions or directories
 
         # Gather all base directories for templates
         template_bases = []
@@ -52,8 +51,9 @@ class Command(BaseCommand):
             if result:
                 for chunk_path in result:
                     try:
-                        print Chunk.get_by_path(chunk_path)
+                        Chunk.get_by_path(chunk_path)
                     except Chunk.DoesNotExist:
                         chunk = Chunk()
                         chunk.path = chunk_path
-                        # TODO dummy chunk content
+                        chunk.content = "This ist a new Chunk. You should edit it."
+                        chunk.save()
