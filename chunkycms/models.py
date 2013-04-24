@@ -171,7 +171,7 @@ class Chunk(Content):
 
     @property
     def name(self):
-        return self.parent
+        return self.slug
 
     def __get_path(self):
         """ generates the path of a chunk """

@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
+from django.contrib.auth.models import User
 import os
 import re
 from chunkycms.models import Chunk
@@ -56,4 +57,5 @@ class Command(BaseCommand):
                         chunk = Chunk()
                         chunk.path = chunk_path
                         chunk.content = "This ist a new Chunk. You should edit it."
+                        chunk.author = User.objects.all()[0]  # Maybe use a beeter way with settings
                         chunk.save()
