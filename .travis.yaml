@@ -1,12 +1,12 @@
 language: python
 python:
-    - "2.7"
     - "2.6"
+    - "2.7"
 env:
-    - DJANGO=Django==1.4 --use-mirrors
-    - DJANGO=Django==1.5 --use-mirrors
-
+    - DJANGO_VERSION=1.4
+    - DJANGO_VERSION=1.5
 install:
-    - pip install -q $DJANGO
-    - pip install -e . --use-mirrors
+    - pip install -q Django==$DJANGO_VERSION --use-mirrors
+    # Install ChunkyCMS itself
+    - pip install -e .
 script: python setup.py test
