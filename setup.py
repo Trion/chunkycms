@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='chunkycms',
@@ -6,4 +6,6 @@ setup(
     install_requires=[
         "Django>=1.4.3",
     ],
+    tests_require=["Django"],
+    test_suite="run_tests.main",
 )

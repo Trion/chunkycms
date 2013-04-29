@@ -3,3 +3,5 @@
 chunkycms/static/.sass-cache/
 *.pyc
 *.swp
+*.egg
+*.egg-info/
