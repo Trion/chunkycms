@@ -1,5 +1,5 @@
-from django.test import TestCase
-from chunkycms.models import Page, SelfParent
+from django.test import TestCase, Client
+from chunkycms.models import Page, SelfParent, Chunk
 from django.contrib.auth.models import User
 
 
@@ -11,6 +11,25 @@ class SimpleTest(TestCase):
 
     def setUp(self):
         self.author = User.objects.get(email="test@example.com")
+        self.client = Client()
+        self.create_pages()
+
+    def create_pages(self):
+        """
+        Creates a page with the slug test and a page with the slug foo and the other page as parent
+        """
+        test_page = Page()
+        test_page.title = "Test"
+        test_page.content = "This is just a Test"
+        test_page.author = self.author
+        test_page.save()
+
+        foo_page = Page()
+        foo_page.title = "Foo"
+        foo_page.content = "Yet another Test"
+        foo_page.author = self.author
+        foo_page.parent = test_page
+        foo_page.save()
 
     def test_page_model(self):
         """
@@ -18,12 +37,6 @@ class SimpleTest(TestCase):
         """
 
         # Test page creation
-        page = Page()
-        page.title = "Test"
-        page.content = "This is just a Test"
-        page.author = self.author
-        page.save()
-
         page = Page.objects.get(slug="test")
         self.assertEqual(page.title, "Test")
 
@@ -37,11 +50,8 @@ class SimpleTest(TestCase):
         self.assertEqual(page.content, "Yet another Test")
 
         # Test get by path
-        pk = page.pk
-        page.parent = Page.objects.get(slug="test")
-        page.save()
-        page = Page.get_by_path("test/test1")
-        self.assertEqual(page.pk, pk)
+        page = Page.get_by_path("test/foo")
+        self.assertEqual(page.title, "Foo")
 
         # Test direct SelfParent Exception
         with self.assertRaises(SelfParent):
@@ -52,5 +62,24 @@ class SimpleTest(TestCase):
         # Test chained SelfParent Exception
         with self.assertRaises(SelfParent):
             page = Page.objects.get(slug="test")
-            page.parent = Page.get_by_path("test/test1")
+            page.parent = Page.get_by_path("test/foo")
             page.save()
+
+    def test_page_availability(self):
+        """
+        Tests http status codes for pages
+        """
+        response = self.client.get("/test/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/test/foo/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/not-existent/")
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get("/not-existent/even-does-not-exist/")
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get("/test/not-existent/")
+        self.assertEqual(response.status_code, 404)

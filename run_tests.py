@@ -17,9 +17,13 @@ def main():
                 'ENGINE': 'django.db.backends.sqlite3',
             }
         },
-        MEDIA_ROOT='/tmp/django_extensions_test_media/',
+        MEDIA_ROOT='/tmp/media/',
         MEDIA_PATH='/media/',
-        ROOT_URLCONF='chunkycms.urls',  # Maybe create a several test dir
+        ROOT_URLCONF='tests.urls',
+        TEMPLATE_LOADERS=(
+            'django.template.loaders.filesystem.Loader',
+        ),
+        TEMPLATE_DIRS = ('tests/templates/',),
         DEBUG=True,
         TEMPLATE_DEBUG=True,
         USE_TZ=True,
