@@ -3,7 +3,7 @@
     
 {% block content %}
     {% autoescape off %}
-    <div about="{% url admin:chunkycms_page_change_ajax page.pk %}">
+    <div about="{% url 'admin:chunkycms_page_change_ajax' page.pk %}">
 	<div property="title">{{ page.title }}</div>
 	<div property="content">{{ page.content }}</div>
     </div>
