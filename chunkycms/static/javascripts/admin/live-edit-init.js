@@ -3,13 +3,12 @@ jQuery(document).ready(function() {
 	url: function () {
 	    return this.getSubjectUri();
 	},
-	// Use Aloha Editor everywhere
-	editorWidgets: {
-	    default: 'aloha',
-	},
 	editorOptions: {
-	    aloha: {
-		widget: 'alohaWidget'
+	    hallo: {
+		plugins: {
+		    'hallolink': {},
+		    'halloimage': {},
+		}
 	    }
 	}
     });
